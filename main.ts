@@ -507,6 +507,8 @@ class TodayTasksView extends ItemView {
 	async onOpen() {
 		const container = this.containerEl.children[1];
 		container.empty();
+		container.addClass('ticktick-today-view');
+		
         // Header with link to TickTick "Today" smart list
         const header = container.createEl("h4");
         const link = header.createEl("a", {
@@ -543,7 +545,7 @@ class TodayTasksView extends ItemView {
 		// Add refresh button
 		const refreshBtn = container.createEl("button", { 
 			text: "🔄 Refresh",
-			cls: "mod-cta"
+			cls: "mod-cta ticktick-refresh-btn"
 		});
 		refreshBtn.addEventListener('click', () => this.refreshTasks());
 
@@ -552,7 +554,10 @@ class TodayTasksView extends ItemView {
 		const totalCount = this.tasks.length;
 
 		if (this.tasks.length === 0) {
-			container.createEl("p", { text: "No tasks for today! 🎉" });
+			container.createEl("p", { 
+				text: "No tasks for today! 🎉",
+				cls: "ticktick-empty-state"
+			});
 			return;
 		}
 
@@ -562,33 +567,33 @@ class TodayTasksView extends ItemView {
 
 		// Render incomplete tasks
 		if (incompleteTasks.length > 0) {
-			const incompleteSection = container.createEl("div", { cls: "task-section" });
+			const incompleteSection = container.createEl("div", { cls: "ticktick-task-section" });
 			incompleteSection.createEl("h5", { text: `📋 Todo (${incompleteTasks.length})` });
 			this.renderTaskList(incompleteSection, incompleteTasks);
 		}
 
 		// Render completed tasks (if enabled in settings)
 		if (completedTasks.length > 0 && this.plugin.settings.showCompleted) {
-			const completedSection = container.createEl("div", { cls: "task-section" });
+			const completedSection = container.createEl("div", { cls: "ticktick-task-section" });
 			completedSection.createEl("h5", { text: `✅ Completed (${completedTasks.length})` });
 			this.renderTaskList(completedSection, completedTasks);
 		}
 	}
 
 	private renderTaskList(container: HTMLElement, tasks: Task[]) {
-		const taskList = container.createEl("ul", { cls: "task-list" });
+		const taskList = container.createEl("ul", { cls: "ticktick-task-list" });
 
 		tasks.forEach(task => {
-			const taskItem = taskList.createEl("li", { cls: "task-item" });
+			const taskItem = taskList.createEl("li", { cls: "ticktick-task-item" });
 			
 			if (task.completed) {
-				taskItem.addClass("task-completed");
+				taskItem.addClass("ticktick-task-completed");
 			}
 
 			// Checkbox
 			const checkbox = taskItem.createEl("input", {
 				type: "checkbox",
-				cls: "task-checkbox"
+				cls: "ticktick-task-checkbox"
 			});
 			checkbox.checked = task.completed;
 			checkbox.addEventListener('change', async (event) => {
@@ -596,9 +601,9 @@ class TodayTasksView extends ItemView {
 				task.completed = checkbox.checked;
 				
 				if (task.completed) {
-					taskItem.addClass("task-completed");
+					taskItem.addClass("ticktick-task-completed");
 				} else {
-					taskItem.removeClass("task-completed");
+					taskItem.removeClass("ticktick-task-completed");
 				}
 				
 				try {
@@ -607,27 +612,27 @@ class TodayTasksView extends ItemView {
 					task.completed = !task.completed;
 					checkbox.checked = task.completed;
 					if (task.completed) {
-						taskItem.addClass("task-completed");
+						taskItem.addClass("ticktick-task-completed");
 					} else {
-						taskItem.removeClass("task-completed");
+						taskItem.removeClass("ticktick-task-completed");
 					}
 					console.error('Toggle failed:', error);
 				}
 			});
 
 			// Task content container
-			const taskContent = taskItem.createEl("div", { cls: "task-content" });
+			const taskContent = taskItem.createEl("div", { cls: "ticktick-task-content" });
 
 			// Task text (clickable)
 			const taskText = taskContent.createEl("div", { 
-				cls: "task-text"
+				cls: "ticktick-task-text"
 			});
 			
 			if (task.id) {
 				// 创建可点击的链接
 				const taskLink = taskText.createEl("a", {
 					text: task.text,
-					cls: "task-link"
+					cls: "ticktick-task-link"
 				});
 				const projectId = task.projectId || 'inbox'; // 如果没有项目ID，使用inbox作为默认值
 				taskLink.href = `https://dida365.com/webapp/#p/${projectId}/tasks/${task.id}`;
@@ -657,12 +662,12 @@ class TodayTasksView extends ItemView {
 			}
 
 			if (metaInfo.length > 0) {
-				const taskMeta = taskContent.createEl("div", { cls: "task-meta" });
+				const taskMeta = taskContent.createEl("div", { cls: "ticktick-task-meta" });
 				
 				if (task.project) {
 					taskMeta.createEl("span", { 
 						text: task.project,
-						cls: "task-project"
+						cls: "ticktick-task-project"
 					});
 				}
 				
@@ -671,7 +676,7 @@ class TodayTasksView extends ItemView {
 					if (dateStr) {
 						taskMeta.createEl("span", { 
 							text: dateStr,
-							cls: "task-datetime"
+							cls: "ticktick-task-datetime"
 						});
 					}
 				}

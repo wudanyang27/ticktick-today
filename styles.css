@@ -1,23 +1,47 @@
-/* TickTick Today Plugin - Simplified Styles */
+/* TickTick Today Plugin - Isolated Styles */
 
 .ticktick-today-ribbon-class {
     color: var(--text-accent);
 }
 
-/* Task sections */
-.task-section {
+/* TickTick Today Plugin Container */
+.ticktick-today-view {
+    padding: 0.8rem;
+}
+
+.ticktick-today-view .ticktick-header {
     margin-bottom: 1rem;
 }
 
-.task-section h5 {
+.ticktick-today-view .ticktick-header h4 {
+    margin: 0;
+    font-size: 1.1em;
+    color: var(--text-normal);
+}
+
+.ticktick-today-view .ticktick-link {
+    color: var(--text-accent);
+    text-decoration: none;
+}
+
+.ticktick-today-view .ticktick-link:hover {
+    text-decoration: underline;
+}
+
+/* TickTick Task sections */
+.ticktick-today-view .ticktick-task-section {
+    margin-bottom: 1rem;
+}
+
+.ticktick-today-view .ticktick-task-section h5 {
     margin: 0.5rem 0;
     color: var(--text-accent);
     font-weight: 600;
     font-size: 0.9em;
 }
 
-/* Task statistics */
-.task-stats {
+/* TickTick Task statistics */
+.ticktick-today-view .ticktick-task-stats {
     font-size: 0.85em;
     color: var(--text-muted);
     margin-bottom: 1rem;
@@ -25,14 +49,14 @@
     text-align: center;
 }
 
-/* Task list */
-.task-list {
+/* TickTick Task list */
+.ticktick-today-view .ticktick-task-list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.task-item {
+.ticktick-today-view .ticktick-task-item {
     display: flex;
     align-items: flex-start;
     padding: 0.4rem;
@@ -41,21 +65,21 @@
     line-height: 1.3;
 }
 
-.task-item:hover {
+.ticktick-today-view .ticktick-task-item:hover {
     background: var(--background-secondary);
 }
 
-.task-item.task-completed {
+.ticktick-today-view .ticktick-task-item.ticktick-task-completed {
     opacity: 0.6;
 }
 
-.task-item.task-completed .task-text {
+.ticktick-today-view .ticktick-task-item.ticktick-task-completed .ticktick-task-text {
     text-decoration: line-through;
     color: var(--text-muted);
 }
 
-/* Task checkbox */
-.task-checkbox {
+/* TickTick Task checkbox */
+.ticktick-today-view .ticktick-task-checkbox {
     appearance: none;
     -webkit-appearance: none;
     width: 16px;
@@ -69,12 +93,12 @@
     flex-shrink: 0;
 }
 
-.task-checkbox:checked {
+.ticktick-today-view .ticktick-task-checkbox:checked {
     background: var(--interactive-accent);
     border-color: var(--interactive-accent);
 }
 
-.task-checkbox:checked::after {
+.ticktick-today-view .ticktick-task-checkbox:checked::after {
     content: '✓';
     position: absolute;
     margin-top: -1px;
@@ -84,20 +108,20 @@
     font-weight: bold;
 }
 
-/* Task content */
-.task-content {
+/* TickTick Task content */
+.ticktick-today-view .ticktick-task-content {
     flex: 1;
     min-width: 0;
 }
 
-.task-text {
+.ticktick-today-view .ticktick-task-text {
     display: block;
     font-size: 0.9em;
     margin-bottom: 0.2rem;
     word-wrap: break-word;
 }
 
-.task-link {
+.ticktick-today-view .ticktick-task-link {
     color: var(--text-normal);
     text-decoration: none;
     cursor: pointer;
@@ -105,93 +129,73 @@
     width: 100%;
 }
 
-.task-link:hover {
+.ticktick-today-view .ticktick-task-link:hover {
     color: var(--text-accent);
     text-decoration: underline;
 }
 
-.task-meta {
+.ticktick-today-view .ticktick-task-meta {
     display: flex;
     gap: 0.5rem;
     font-size: 0.75em;
     color: var(--text-muted);
 }
 
-.task-project {
+.ticktick-today-view .ticktick-task-project {
     background: var(--background-modifier-border);
     padding: 0.1rem 0.3rem;
     border-radius: 2px;
 }
 
-.task-datetime {
+.ticktick-today-view .ticktick-task-datetime {
     font-style: italic;
 }
 
-/* Refresh button */
-button.mod-cta {
+/* TickTick Refresh button */
+.ticktick-today-view .ticktick-refresh-btn {
     margin-bottom: 1rem;
     width: 100%;
     font-size: 0.85em;
     padding: 0.4rem;
 }
 
-/* View container */
-.view-content {
-    padding: 0.8rem;
-}
-
-/* Empty state */
-.view-content p {
+/* TickTick Empty state */
+.ticktick-today-view .ticktick-empty-state {
     text-align: center;
     color: var(--text-muted);
+    font-style: italic;
     margin: 2rem 0;
 }
 
-/* Refresh button */
-button.mod-cta {
-    margin-bottom: 1rem;
-    width: 100%;
-}
-
-/* View container adjustments */
-.view-content {
-    padding: 1rem;
-}
-
-/* Responsive design for narrow sidebars */
+/* TickTick Responsive design for narrow sidebars */
 @media (max-width: 400px) {
-    .task-item {
+    .ticktick-today-view .ticktick-task-item {
         flex-direction: column;
         align-items: flex-start;
     }
     
-    .task-checkbox {
+    .ticktick-today-view .ticktick-task-checkbox {
         align-self: flex-end;
         margin-top: 0.5rem;
         margin-right: 0;
     }
-    
-    .task-file-link {
-        margin-top: 0.25rem;
-        margin-right: 0;
-    }
 }
 
-/* Dark theme specific adjustments */
-.theme-dark .task-item {
+/* TickTick Dark theme specific adjustments */
+.theme-dark .ticktick-today-view .ticktick-task-item {
     border-left-color: var(--interactive-accent);
 }
 
-.theme-dark .task-priority {
+.theme-dark .ticktick-today-view .ticktick-task-priority {
     background: var(--background-modifier-border);
 }
 
-/* Animation for task completion */
-.task-item {
-    animation: fadeIn 0.3s ease;
+/* TickTick Animation for task completion */
+.ticktick-today-view .ticktick-task-item {
+    animation: ticktickFadeIn 0.3s ease;
 }
 
-@keyframes fadeIn {
+@keyframes ticktickFadeIn {
     from {
         opacity: 0;
         transform: translateY(-10px);
@@ -202,16 +206,8 @@ button.mod-cta {
     }
 }
 
-/* Scrollable content for long task lists */
-.view-content {
+/* TickTick Scrollable content for long task lists */
+.ticktick-today-view {
     overflow-y: auto;
     max-height: 100%;
-}
-
-/* Empty state styling */
-.view-content p {
-    text-align: center;
-    color: var(--text-muted);
-    font-style: italic;
-    margin: 2rem 0;
 }
