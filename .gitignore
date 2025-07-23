@@ -18,5 +18,9 @@ main.js
 # obsidian
 data.json
 
+# JXA scripts (generated at runtime)
+ticktick-fetch.js
+ticktick-toggle.js
+
 # Exclude macOS Finder (System Explorer) View States
 .DS_Store

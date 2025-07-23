@@ -1,8 +1,217 @@
-/*
+/* TickTick Today Plugin - Simplified Styles */
 
-This CSS file will be included with your plugin, and
-available in the app when your plugin is enabled.
+.ticktick-today-ribbon-class {
+    color: var(--text-accent);
+}
 
-If your plugin does not need CSS, delete this file.
+/* Task sections */
+.task-section {
+    margin-bottom: 1rem;
+}
 
-*/
+.task-section h5 {
+    margin: 0.5rem 0;
+    color: var(--text-accent);
+    font-weight: 600;
+    font-size: 0.9em;
+}
+
+/* Task statistics */
+.task-stats {
+    font-size: 0.85em;
+    color: var(--text-muted);
+    margin-bottom: 1rem;
+    padding: 0.3rem;
+    text-align: center;
+}
+
+/* Task list */
+.task-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.task-item {
+    display: flex;
+    align-items: flex-start;
+    padding: 0.4rem;
+    margin-bottom: 0.3rem;
+    border-radius: 3px;
+    line-height: 1.3;
+}
+
+.task-item:hover {
+    background: var(--background-secondary);
+}
+
+.task-item.task-completed {
+    opacity: 0.6;
+}
+
+.task-item.task-completed .task-text {
+    text-decoration: line-through;
+    color: var(--text-muted);
+}
+
+/* Task checkbox */
+.task-checkbox {
+    appearance: none;
+    -webkit-appearance: none;
+    width: 16px;
+    height: 16px;
+    border: 1px solid var(--text-muted);
+    border-radius: 2px;
+    margin-right: 0.5rem;
+    margin-top: 0.1rem;
+    cursor: pointer;
+    background: var(--background-primary);
+    flex-shrink: 0;
+}
+
+.task-checkbox:checked {
+    background: var(--interactive-accent);
+    border-color: var(--interactive-accent);
+}
+
+.task-checkbox:checked::after {
+    content: '✓';
+    position: absolute;
+    margin-top: -1px;
+    margin-left: 1px;
+    color: white;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+/* Task content */
+.task-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.task-text {
+    display: block;
+    font-size: 0.9em;
+    margin-bottom: 0.2rem;
+    word-wrap: break-word;
+}
+
+.task-link {
+    color: var(--text-normal);
+    text-decoration: none;
+    cursor: pointer;
+    display: inline-block;
+    width: 100%;
+}
+
+.task-link:hover {
+    color: var(--text-accent);
+    text-decoration: underline;
+}
+
+.task-meta {
+    display: flex;
+    gap: 0.5rem;
+    font-size: 0.75em;
+    color: var(--text-muted);
+}
+
+.task-project {
+    background: var(--background-modifier-border);
+    padding: 0.1rem 0.3rem;
+    border-radius: 2px;
+}
+
+.task-datetime {
+    font-style: italic;
+}
+
+/* Refresh button */
+button.mod-cta {
+    margin-bottom: 1rem;
+    width: 100%;
+    font-size: 0.85em;
+    padding: 0.4rem;
+}
+
+/* View container */
+.view-content {
+    padding: 0.8rem;
+}
+
+/* Empty state */
+.view-content p {
+    text-align: center;
+    color: var(--text-muted);
+    margin: 2rem 0;
+}
+
+/* Refresh button */
+button.mod-cta {
+    margin-bottom: 1rem;
+    width: 100%;
+}
+
+/* View container adjustments */
+.view-content {
+    padding: 1rem;
+}
+
+/* Responsive design for narrow sidebars */
+@media (max-width: 400px) {
+    .task-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+    
+    .task-checkbox {
+        align-self: flex-end;
+        margin-top: 0.5rem;
+        margin-right: 0;
+    }
+    
+    .task-file-link {
+        margin-top: 0.25rem;
+        margin-right: 0;
+    }
+}
+
+/* Dark theme specific adjustments */
+.theme-dark .task-item {
+    border-left-color: var(--interactive-accent);
+}
+
+.theme-dark .task-priority {
+    background: var(--background-modifier-border);
+}
+
+/* Animation for task completion */
+.task-item {
+    animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Scrollable content for long task lists */
+.view-content {
+    overflow-y: auto;
+    max-height: 100%;
+}
+
+/* Empty state styling */
+.view-content p {
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+    margin: 2rem 0;
+}
