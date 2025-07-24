@@ -1,266 +1,268 @@
 # TickTick Today - Obsidian Plugin
 
-> ⚠️ **重要提示**: 此插件仅支持 macOS 系统，需要 TickTick 应用配合使用。
+> ⚠️ **Important**: This plugin only supports macOS and requires the TickTick application.
 
-🎯 一个专为GTD (Getting Things Done) 方法论设计的Obsidian插件，直接从TickTick应用获取今日任务并在侧边栏显示，让你在写作和思考时能够快速查看和完成今日任务。
+🎯 An Obsidian plugin specifically designed for GTD (Getting Things Done) methodology. It directly fetches today's tasks from the TickTick app and displays them in the sidebar, allowing you to quickly view and complete daily tasks while writing and thinking.
 
-**设计理念**: 本插件并非为了替代TickTick，而是作为GTD实践的辅助工具。任务的创建、编辑、项目管理等主要操作仍应在TickTick中进行，插件的作用是在你专注于Obsidian工作时，提供便捷的今日任务概览和快速完成功能。
+**Design Philosophy**: This plugin is not intended to replace TickTick, but serves as an auxiliary tool for GTD practice. Task creation, editing, project management, and other primary operations should still be performed in TickTick. The plugin's role is to provide convenient today's task overview and quick completion functionality while you focus on your work in Obsidian.
 
 ![Plugin Screenshot](https://img.shields.io/badge/Obsidian-Plugin-blueviolet)
 ![Version](https://img.shields.io/badge/version-1.0.0-blue)
 ![macOS Only](https://img.shields.io/badge/platform-macOS-lightgrey)
 
-## ✨ 核心功能
+📖 **Language**: [中文文档](README-zh.md) | English
 
-- 🔗 **TickTick直接集成**: 通过macOS JXA API直接获取TickTick今日任务
-- 📱 **侧边栏面板**: 专用的今日任务概览界面，无需切换应用
-- ⚡ **快速任务完成**: 在Obsidian中直接标记任务完成，状态实时同步到TickTick
-- 🔄 **智能自动刷新**: 可配置的定时更新，保持任务状态同步
-- 🏷️ **项目信息显示**: 显示任务所属项目名称，支持中文项目名
-- 📅 **智能时间显示**: 人性化的时间显示（今天、明天、X天前/后）
-- 🔗 **快速跳转**: 点击任务标题直接跳转到TickTick应用进行详细操作
-- 📌 **置顶任务优先**: 置顶任务自动排在最前面
+## ✨ Core Features
 
-## 🎯 使用场景与定位
+- 🔗 **Direct TickTick Integration**: Fetches TickTick today's tasks via macOS JXA API
+- 📱 **Sidebar Panel**: Dedicated today's task overview interface without app switching
+- ⚡ **Quick Task Completion**: Mark tasks as complete directly in Obsidian with real-time sync to TickTick
+- 🔄 **Smart Auto-Refresh**: Configurable periodic updates to keep task status synchronized
+- 🏷️ **Project Information Display**: Shows task project names with Chinese project name support
+- 📅 **Smart Time Display**: Human-readable time display (today, tomorrow, X days ago/later)
+- 🔗 **Quick Navigation**: Click task titles to jump directly to TickTick for detailed operations
+- 📌 **Pinned Tasks Priority**: Pinned tasks automatically appear at the top
 
-### GTD 工作流辅助
-本插件是为了让GTD实践者在使用Obsidian进行知识管理、写作或思考时，能够：
-- 快速浏览今日待办事项
-- 不离开Obsidian就能完成简单任务
-- 保持对重要任务的视觉提醒
-- 无缝衔接思考工作与任务执行
+## 🎯 Use Cases and Positioning
 
-### 不是TickTick的替代品
-请注意，本插件**不是**为了替代TickTick，而是作为补充工具：
-- ✅ **适合**: 快速查看今日任务、标记完成状态、获取任务提醒
-- ❌ **不适合**: 创建新任务、编辑任务详情、管理项目、设置提醒
-- 💡 **建议**: 任务的创建、编辑、项目管理等核心操作仍应在TickTick中进行
+### GTD Workflow Assistant
+This plugin helps GTD practitioners while using Obsidian for knowledge management, writing, or thinking by:
+- Quickly browsing today's to-do items
+- Completing simple tasks without leaving Obsidian
+- Maintaining visual reminders of important tasks
+- Seamlessly connecting thinking work with task execution
 
-## 🖥️ 系统要求
+### Not a TickTick Replacement
+Please note that this plugin is **not** intended to replace TickTick, but serves as a complementary tool:
+- ✅ **Suitable for**: Quick task viewing, marking completion status, getting task reminders
+- ❌ **Not suitable for**: Creating new tasks, editing task details, managing projects, setting reminders
+- 💡 **Recommendation**: Task creation, editing, project management, and other core operations should still be performed in TickTick
 
-- **操作系统**: macOS（必须，使用JXA技术）
-- **TickTick应用**: 已安装并登录
-- **Obsidian版本**: 0.15.0+
-- **系统权限**: Obsidian需要辅助功能权限来访问TickTick
+## 🖥️ System Requirements
 
-## 🚀 安装和设置
+- **Operating System**: macOS (Required, uses JXA technology)
+- **TickTick Application**: Installed and logged in
+- **Obsidian Version**: 0.15.0+
+- **System Permissions**: Obsidian needs accessibility permissions to access TickTick
 
-### 1. 手动安装
+## 🚀 Installation and Setup
+
+### 1. Manual Installation
 ```bash
-# 下载插件文件到Obsidian插件目录
+# Download plugin files to Obsidian plugin directory
 mkdir -p ~/.obsidian/plugins/ticktick-today/
-# 复制 main.js, manifest.json, styles.css 到上述目录
+# Copy main.js, manifest.json, styles.css to the above directory
 ```
 
-### 2. 配置系统权限
-1. 打开系统偏好设置 → 安全性与隐私 → 隐私 → 辅助功能
-2. 点击锁图标解锁设置
-3. 添加Obsidian应用并勾选启用
+### 2. Configure System Permissions
+1. Open System Preferences → Security & Privacy → Privacy → Accessibility
+2. Click the lock icon to unlock settings
+3. Add Obsidian application and check to enable
 
-### 3. 启用插件
-1. 重启Obsidian
-2. 打开设置 → 第三方插件
-3. 启用"TickTick Today"
-4. 插件会自动在右侧边栏显示今日任务面板
+### 3. Enable Plugin
+1. Restart Obsidian
+2. Go to Settings → Community Plugins
+3. Enable "TickTick Today"
+4. The plugin will automatically display the today's task panel in the right sidebar
 
-**重要提示**: 插件首次启动时会在插件目录自动创建两个JXA脚本文件：
-- `ticktick-fetch.js` - 用于获取今日任务
-- `ticktick-toggle.js` - 用于切换任务状态
+**Important Note**: On first startup, the plugin will automatically create two JXA script files in the plugin directory:
+- `ticktick-fetch.js` - For fetching today's tasks
+- `ticktick-toggle.js` - For toggling task status
 
-这些文件会在插件卸载时自动清理。
+These files will be automatically cleaned up when the plugin is uninstalled.
 
-## 📱 使用方法
+## 📱 Usage
 
-### 基本操作
-- **打开面板**: 点击左侧工具栏的📅图标或使用命令面板
-- **刷新任务**: 点击面板顶部的🔄刷新按钮获取最新状态
-- **完成任务**: 点击任务左侧的复选框快速标记完成
-- **查看详情**: 点击任务标题跳转到TickTick进行详细管理
+### Basic Operations
+- **Open Panel**: Click the 📅 icon in the left toolbar or use the command palette
+- **Refresh Tasks**: Click the 🔄 refresh button at the top of the panel to get the latest status
+- **Complete Tasks**: Click the checkbox to the left of a task to quickly mark it as complete
+- **View Details**: Click task titles to jump to TickTick for detailed management
 
-### 推荐工作流程
-1. **在TickTick中规划**: 创建任务、设置项目、安排时间
-2. **在Obsidian中执行**: 查看今日任务列表，专注于写作和思考
-3. **快速标记完成**: 完成任务后直接在插件中标记，无需切换应用
-4. **详细管理回归TickTick**: 需要编辑任务或查看详情时，点击跳转到TickTick
+### Recommended Workflow
+1. **Plan in TickTick**: Create tasks, set projects, schedule time
+2. **Execute in Obsidian**: View today's task list, focus on writing and thinking
+3. **Quick Mark Complete**: After completing tasks, mark them directly in the plugin without switching apps
+4. **Return to TickTick for Detailed Management**: When you need to edit tasks or view details, click to jump to TickTick
 
-### 任务显示规则
-- **排序优先级**: 置顶任务 → 未完成任务 → 已完成任务
-- **时间排序**: 在同一分组内按到期时间升序排列
+### Task Display Rules
+- **Sort Priority**: Pinned tasks → Incomplete tasks → Completed tasks
+- **Time Sorting**: Within the same group, sorted by due time in ascending order
 
-### 任务信息显示
-- **任务标题**: 可点击跳转到TickTick进行详细操作
-- **项目名称**: 显示任务所属项目（支持"收集箱"中文显示）
-- **到期时间**: 智能显示（今天、明天、X天前/后，包含具体时间）
-- **完成状态**: 实时同步显示，与TickTick保持一致
+### Task Information Display
+- **Task Title**: Clickable to jump to TickTick for detailed operations
+- **Project Name**: Shows the project the task belongs to (supports Chinese display for "Inbox")
+- **Due Time**: Smart display (today, tomorrow, X days ago/later, including specific time)
+- **Completion Status**: Real-time synchronized display, consistent with TickTick
 
-## ⚙️ 插件设置
+## ⚙️ Plugin Settings
 
-### 自动刷新设置
-- **启用自动刷新**: 定时获取最新任务状态
-- **刷新间隔**: 1-60分钟可选（默认5分钟）
+### Auto-Refresh Settings
+- **Enable Auto-Refresh**: Periodically fetch the latest task status
+- **Refresh Interval**: 1-60 minutes selectable (default 5 minutes)
 
-### 显示设置
-- **显示已完成任务**: 选择是否在面板中显示已完成的任务
-- **TickTick应用名称**: 支持自定义应用名称（如中文版等）
+### Display Settings
+- **Show Completed Tasks**: Choose whether to display completed tasks in the panel
+- **TickTick App Name**: Support custom app name (such as Chinese version, etc.)
 
-## 🔧 技术特性
+## 🔧 Technical Features
 
-### JXA脚本管理
-- **高效执行**: 插件启动时创建JXA脚本文件，避免重复创建开销
-- **动态更新**: 设置更改时自动重新生成脚本文件
-- **自动清理**: 插件卸载时自动删除生成的脚本文件
-- **错误处理**: 完善的错误捕获和用户友好的提示
+### JXA Script Management
+- **Efficient Execution**: Creates JXA script files on plugin startup to avoid repeated creation overhead
+- **Dynamic Updates**: Automatically regenerates script files when settings change
+- **Auto Cleanup**: Automatically deletes generated script files when plugin is uninstalled
+- **Error Handling**: Comprehensive error capture and user-friendly prompts
 
-### 数据处理
-- **项目缓存**: 智能缓存项目信息，提高响应速度
-- **任务解析**: 完整解析TickTick任务数据结构
-- **状态同步**: 双向同步任务完成状态
-- **类型安全**: 完整的TypeScript类型定义
+### Data Processing
+- **Project Caching**: Smart caching of project information to improve response speed
+- **Task Parsing**: Complete parsing of TickTick task data structure
+- **Status Synchronization**: Bidirectional synchronization of task completion status
+- **Type Safety**: Complete TypeScript type definitions
 
-### 用户体验
-- **响应式设计**: 适配不同宽度的侧边栏
-- **主题兼容**: 自动适配Obsidian主题颜色
-- **平滑动画**: 任务状态切换的视觉反馈
-- **智能链接**: 自动生成TickTick深度链接
+### User Experience
+- **Responsive Design**: Adapts to different sidebar widths
+- **Theme Compatibility**: Automatically adapts to Obsidian theme colors
+- **Smooth Animations**: Visual feedback for task status transitions
+- **Smart Links**: Automatically generates TickTick deep links
 
-## 🛠️ 开发信息
+## 🛠️ Development Information
 
-### 项目结构
+### Project Structure
 ```
 ticktick-today/
-├── main.ts              # 主插件代码（TypeScript）
-├── main.js              # 编译后的插件文件
-├── styles.css           # 插件样式
-├── manifest.json        # 插件清单
-├── ticktick-fetch.js    # JXA任务获取脚本（运行时生成）
-├── ticktick-toggle.js   # JXA任务切换脚本（运行时生成）
-├── package.json         # 项目配置
-├── tsconfig.json        # TypeScript配置
-└── README.md           # 项目文档
+├── main.ts              # Main plugin code (TypeScript)
+├── main.js              # Compiled plugin file
+├── styles.css           # Plugin styles
+├── manifest.json        # Plugin manifest
+├── ticktick-fetch.js    # JXA task fetching script (generated at runtime)
+├── ticktick-toggle.js   # JXA task toggling script (generated at runtime)
+├── package.json         # Project configuration
+├── tsconfig.json        # TypeScript configuration
+└── README.md           # Project documentation
 ```
 
-### 开发环境
+### Development Environment
 ```bash
-# 克隆仓库
+# Clone repository
 git clone https://github.com/wudanyang27/ticktick-today.git
 
-# 安装依赖
+# Install dependencies
 npm install
 
-# 开发模式（自动编译和监视）
+# Development mode (auto compile and watch)
 npm run dev
 
-# 构建生产版本
+# Build production version
 npm run build
 ```
 
-### 技术栈
-- **TypeScript**: 主要开发语言
-- **Obsidian API**: 插件开发框架
-- **JXA (JavaScript for Automation)**: macOS自动化技术
-- **CSS3**: 界面样式
-- **Node.js**: 构建工具链
+### Technology Stack
+- **TypeScript**: Primary development language
+- **Obsidian API**: Plugin development framework
+- **JXA (JavaScript for Automation)**: macOS automation technology
+- **CSS3**: Interface styling
+- **Node.js**: Build toolchain
 
-## 🔍 故障排除
+## 🔍 Troubleshooting
 
-### 常见问题
+### Common Issues
 
-**Q: 为什么不能在插件中创建新任务？**
-A: 这是设计选择，不是功能缺陷。本插件专注于任务概览和快速完成，任务创建和编辑应该在TickTick中进行，这样可以：
-- 保持任务管理的完整性和一致性
-- 避免功能重复和界面复杂化
-- 让用户专注于Obsidian的核心价值：知识管理
+**Q: Why can't I create new tasks in the plugin?**
+A: This is a design choice, not a feature defect. This plugin focuses on task overview and quick completion. Task creation and editing should be done in TickTick to:
+- Maintain task management integrity and consistency
+- Avoid feature duplication and interface complexity
+- Let users focus on Obsidian's core value: knowledge management
 
-**Q: TickTick任务没有显示怎么办？**
-A: 请检查：
-- TickTick应用是否已打开并登录
-- macOS是否给予Obsidian辅助功能权限
-- 插件是否在设置中正确启用
-- 检查控制台是否有错误信息
+**Q: TickTick tasks are not showing up?**
+A: Please check:
+- Is the TickTick app open and logged in
+- Has macOS granted Obsidian accessibility permissions
+- Is the plugin properly enabled in settings
+- Check the console for any error messages
 
-**Q: 任务状态切换失败？**
-A: 可能原因：
-- TickTick应用没有网络连接
-- 任务ID获取失败
-- 系统权限被撤销
-- 建议重启TickTick应用后重试
+**Q: Task status toggle fails?**
+A: Possible reasons:
+- TickTick app has no network connection
+- Task ID retrieval failed
+- System permissions were revoked
+- Try restarting the TickTick app and retry
 
-**Q: 插件加载失败？**
-A: 解决方法：
-- 确认是在macOS系统上运行（此插件不支持Windows/Linux）
-- 检查插件文件是否完整
-- 查看Obsidian控制台的错误信息
-- 尝试重新安装插件
+**Q: Plugin fails to load?**
+A: Solutions:
+- Confirm you're running on macOS (this plugin doesn't support Windows/Linux)
+- Check if plugin files are complete
+- View Obsidian console error messages
+- Try reinstalling the plugin
 
-**Q: JXA脚本文件相关问题？**
+**Q: JXA script file related issues?**
 A: 
-- 脚本文件会在插件启动时自动创建
-- 如果文件损坏，重启插件会重新生成
-- 手动删除脚本文件不会影响插件功能
+- Script files are automatically created when the plugin starts
+- If files are corrupted, restarting the plugin will regenerate them
+- Manually deleting script files won't affect plugin functionality
 
-### 调试技巧
-1. 打开Obsidian开发者控制台（Cmd+Option+I）
-2. 查看Console标签页的错误信息
-3. 检查插件目录中的JXA脚本文件是否存在
-4. 在终端中手动测试JXA脚本：
+### Debugging Tips
+1. Open Obsidian Developer Console (Cmd+Option+I)
+2. Check the Console tab for error messages
+3. Verify JXA script files exist in the plugin directory
+4. Manually test JXA scripts in terminal:
    ```bash
    osascript -l JavaScript /path/to/ticktick-fetch.js
    ```
 
-## 📋 使用示例
+## 📋 Usage Examples
 
-### GTD实践中的典型场景
+### Typical Scenarios in GTD Practice
 
-#### 场景1: 知识工作者的一天
-1. **早晨规划**: 在TickTick中回顾和调整今日任务
-2. **专注工作**: 打开Obsidian开始写作，侧边栏显示今日任务概览
-3. **任务提醒**: 在写作间隙快速浏览待办事项，保持对优先级的感知
-4. **快速完成**: 完成简单任务时直接在插件中标记，无需打断思路
-5. **深度操作**: 需要详细编辑任务时，点击跳转到TickTick
+#### Scenario 1: A Knowledge Worker's Day
+1. **Morning Planning**: Review and adjust today's tasks in TickTick
+2. **Focused Work**: Open Obsidian to start writing, with today's task overview in the sidebar
+3. **Task Reminders**: Quickly browse to-do items during writing breaks, maintaining awareness of priorities
+4. **Quick Completion**: Mark simple tasks as complete directly in the plugin without interrupting thought flow
+5. **Deep Operations**: When detailed task editing is needed, click to jump to TickTick
 
-#### 场景2: 研究工作流程
-1. **文献阅读**: 在Obsidian中阅读和做笔记
-2. **任务关联**: 看到今日有"整理研究笔记"任务
-3. **即时完成**: 笔记整理完成后，直接在侧边栏标记任务完成
-4. **状态同步**: 任务状态自动同步到TickTick，其他设备可见
+#### Scenario 2: Research Workflow
+1. **Literature Reading**: Read and take notes in Obsidian
+2. **Task Association**: See today's "organize research notes" task
+3. **Instant Completion**: After organizing notes, mark the task complete directly in the sidebar
+4. **Status Sync**: Task status automatically syncs to TickTick, visible on other devices
 
-### 最佳实践建议
-- **任务创建**: 始终在TickTick中创建和管理任务
-- **快速查看**: 利用插件获得今日任务的视觉提醒
-- **专注模式**: 在深度工作时，通过插件保持对重要任务的感知
-- **无缝切换**: 需要详细操作时，一键跳转到TickTick
-- **状态同步**: 利用快速完成功能保持跨设备的任务状态一致性
+### Best Practice Recommendations
+- **Task Creation**: Always create and manage tasks in TickTick
+- **Quick Overview**: Use the plugin for visual reminders of today's tasks
+- **Focus Mode**: During deep work, maintain awareness of important tasks through the plugin
+- **Seamless Switching**: One-click jump to TickTick when detailed operations are needed
+- **Status Sync**: Use quick completion feature to maintain cross-device task status consistency
 
-## 🤝 贡献指南
+## 🤝 Contributing
 
-欢迎贡献代码、报告问题或提出建议！
+Contributions of code, issue reports, or suggestions are welcome!
 
-### 报告问题
-- 使用GitHub Issues报告Bug
-- 详细描述问题复现步骤
-- 提供系统环境信息
+### Reporting Issues
+- Use GitHub Issues to report bugs
+- Provide detailed steps to reproduce the problem
+- Include system environment information
 
-### 功能建议
-- 在Issues中标记为"enhancement"
-- 详细描述期望的功能
-- 说明使用场景和需求
+### Feature Suggestions
+- Mark as "enhancement" in Issues
+- Describe the desired functionality in detail
+- Explain use cases and requirements
 
-## 📄 许可证
+## 📄 License
 
-MIT License - 详见 [LICENSE](LICENSE) 文件
+MIT License - See [LICENSE](LICENSE) file for details
 
-## 📞 联系方式
+## 📞 Contact
 
-- **作者**: wudanyang27
+- **Author**: wudanyang27
 - **GitHub**: [https://github.com/wudanyang27](https://github.com/wudanyang27)
-- **项目主页**: [https://github.com/wudanyang27/ticktick-today](https://github.com/wudanyang27/ticktick-today)
+- **Project Home**: [https://github.com/wudanyang27/ticktick-today](https://github.com/wudanyang27/ticktick-today)
 
 ---
 
-**⚠️ 重要说明**: 
-- 此插件**仅支持macOS系统**，使用JXA (JavaScript for Automation) 技术与TickTick通信
-- 本插件是GTD工作流的**辅助工具**，不是TickTick的替代品
-- 任务的创建、编辑、项目管理等主要功能请在TickTick应用中完成
-- 插件主要用于快速查看今日任务和标记完成状态
+**⚠️ Important Notes**: 
+- This plugin **only supports macOS**, using JXA (JavaScript for Automation) technology to communicate with TickTick
+- This plugin is an **auxiliary tool** for GTD workflow, not a replacement for TickTick
+- Task creation, editing, project management, and other primary functions should be performed in the TickTick app
+- The plugin is primarily for quick viewing of today's tasks and marking completion status
 
-**🙏 感谢**: 感谢Obsidian社区和TickTick提供的优秀平台，让GTD实践变得更加高效便捷。
+**🙏 Acknowledgments**: Thanks to the Obsidian community and TickTick for providing excellent platforms that make GTD practice more efficient and convenient.
