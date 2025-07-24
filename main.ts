@@ -21,14 +21,12 @@ const VIEW_TYPE_TODAY_TASKS = "today-tasks-view";
 
 interface TickTickTodaySettings {
 	refreshInterval: number; // in minutes
-	showCompleted: boolean;
 	autoRefresh: boolean;
 	tickTickAppName: string;
 }
 
 const DEFAULT_SETTINGS: TickTickTodaySettings = {
 	refreshInterval: 5,
-	showCompleted: true,
 	autoRefresh: true,
 	tickTickAppName: 'TickTick'
 }
@@ -338,7 +336,7 @@ function run(argv) {
 
 						// Parse the TickTick response format
 						const tickTickTasks: Task[] = this.parseTickTickResponse(result.tasks || result);
-						new Notice(`获取到 ${tickTickTasks.length} 个今日任务`);
+						// new Notice(`获取到 ${tickTickTasks.length} 个今日任务`);
 						resolve(this.sortTasks(tickTickTasks));
 					} catch (parseError) {
 						console.error('Parse Error:', parseError);
@@ -572,8 +570,8 @@ class TodayTasksView extends ItemView {
 			this.renderTaskList(incompleteSection, incompleteTasks);
 		}
 
-		// Render completed tasks (if enabled in settings)
-		if (completedTasks.length > 0 && this.plugin.settings.showCompleted) {
+		// Render completed tasks
+		if (completedTasks.length > 0) {
 			const completedSection = container.createEl("div", { cls: "ticktick-task-section" });
 			completedSection.createEl("h5", { text: `✅ Completed (${completedTasks.length})` });
 			this.renderTaskList(completedSection, completedTasks);
@@ -827,17 +825,6 @@ class TickTickTodaySettingTab extends PluginSettingTab {
 				.onChange(async (value) => {
 					this.plugin.settings.refreshInterval = value;
 					await this.plugin.saveSettings();
-				}));
-
-		new Setting(containerEl)
-			.setName('Show Completed Tasks')
-			.setDesc('Show completed tasks in the sidebar')
-			.addToggle(toggle => toggle
-				.setValue(this.plugin.settings.showCompleted)
-				.onChange(async (value) => {
-					this.plugin.settings.showCompleted = value;
-					await this.plugin.saveSettings();
-					this.plugin.refreshTasks();
 				}));
 
 		new Setting(containerEl)

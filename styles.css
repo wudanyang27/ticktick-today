@@ -1,9 +1,5 @@
 /* TickTick Today Plugin - Isolated Styles */
 
-.ticktick-today-ribbon-class {
-    color: var(--text-accent);
-}
-
 /* TickTick Today Plugin Container */
 .ticktick-today-view {
     padding: 0.8rem;
