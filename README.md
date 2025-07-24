@@ -247,7 +247,19 @@ Contributions of code, issue reports, or suggestions are welcome!
 - Describe the desired functionality in detail
 - Explain use cases and requirements
 
-## 📄 License
+## � Privacy & Data Handling
+
+This plugin prioritizes your privacy and data security:
+
+- **No Data Collection**: This plugin does not collect, store, or transmit any personal data
+- **Local Operation**: All task data processing occurs locally on your device
+- **No External Servers**: No communication with external servers except TickTick (via local JXA)
+- **No Analytics**: No usage tracking or analytics are implemented
+- **Minimal Permissions**: Only requests necessary system permissions for TickTick integration
+
+The plugin only accesses TickTick data through macOS's built-in JXA (JavaScript for Automation) interface, which requires explicit user permission via macOS Accessibility settings.
+
+## �📄 License
 
 MIT License - See [LICENSE](LICENSE) file for details
 
