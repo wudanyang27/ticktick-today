@@ -7,7 +7,8 @@ import {
 	WorkspaceLeaf,
 	Notice,
 	TFile,
-	moment
+	moment,
+    Platform
 } from 'obsidian';
 
 // macOS JXA interface for TickTick
@@ -134,7 +135,8 @@ export default class TickTickTodayPlugin extends Plugin {
 			
 			// Get plugin directory path
 			// @ts-ignore
-			const pluginDir = this.app.vault.adapter.basePath + '/.obsidian/plugins/ticktick-today';
+			const configDir = this.app.vault.configDir;
+const pluginDir = path.join(this.app.vault.adapter.basePath, configDir, 'plugins', 'ticktick-today');
 			
 			// Create fetch script
 			const fetchScript = `
@@ -298,7 +300,7 @@ function run(argv) {
 	private async getTickTickTasks(): Promise<Task[]> {
 		try {
 			// Check if we're on macOS and can use JXA
-			if (process.platform !== 'darwin') {
+			if (!Platform.isMacOS) {
 				new Notice('TickTick integration requires macOS');
 				return [];
 			}
