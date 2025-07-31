@@ -541,12 +541,12 @@ class TodayTasksView extends ItemView {
         // Nothing to clean up
     }
 
-    async refreshTasks() {
-        this.tasks = await this.plugin.getTodaysTasks();
-        this.renderTasks();
-    }
-
-    private renderTasks() {
+	async refreshTasks() {
+		this.tasks = await this.plugin.getTodaysTasks();
+		this.renderTasks();
+		// Show refresh notification
+		new Notice('Today Refreshed');
+	}    private renderTasks() {
         const container = this.containerEl.children[1];
 
         // Clear previous content except the header

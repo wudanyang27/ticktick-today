@@ -169,7 +169,7 @@
         flex-direction: column;
         align-items: flex-start;
     }
-    
+
     .ticktick-today-view .ticktick-task-checkbox {
         align-self: flex-end;
         margin-top: 0.5rem;
@@ -184,22 +184,6 @@
 
 .theme-dark .ticktick-today-view .ticktick-task-priority {
     background: var(--background-modifier-border);
-}
-
-/* TickTick Animation for task completion */
-.ticktick-today-view .ticktick-task-item {
-    animation: ticktickFadeIn 0.3s ease;
-}
-
-@keyframes ticktickFadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(-10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
 }
 
 /* TickTick Scrollable content for long task lists */
