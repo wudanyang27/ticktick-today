@@ -11,6 +11,9 @@ import {
     Platform,
     FileSystemAdapter
 } from 'obsidian';
+import * as fs from 'fs';
+import * as path from 'path';
+import { exec } from 'child_process';
 
 // macOS JXA interface for TickTick
 declare global {
@@ -42,7 +45,7 @@ interface Task {
     dueDate?: string;
     id?: string;
     project?: string;
-    projectId?: string; // 原始项目ID，用于构建链接
+    projectId?: string; // Original project ID used to build links
     tags?: string[];
     pinned?: boolean;
 }
@@ -83,7 +86,7 @@ export default class TickTickTodayPlugin extends Plugin {
         );
 
         // Add ribbon icon
-        const ribbonIconEl = this.addRibbonIcon('calendar-check', 'Today\'s Tasks', (evt: MouseEvent) => {
+    const ribbonIconEl = this.addRibbonIcon('calendar-check', 'Today\'s tasks', (evt: MouseEvent) => {
             this.activateView();
         });
         ribbonIconEl.addClass('ticktick-today-ribbon-class');
@@ -91,7 +94,7 @@ export default class TickTickTodayPlugin extends Plugin {
         // Add command to open today's tasks
         this.addCommand({
             id: 'open-today-tasks',
-            name: 'Open Today\'s Tasks',
+            name: 'Open today\'s tasks',
             callback: () => {
                 this.activateView();
             }
@@ -100,7 +103,7 @@ export default class TickTickTodayPlugin extends Plugin {
         // Add command to refresh tasks
         this.addCommand({
             id: 'refresh-today-tasks',
-            name: 'Refresh Today\'s Tasks',
+            name: 'Refresh today\'s tasks',
             callback: () => {
                 this.refreshTasks();
             }
@@ -150,9 +153,6 @@ export default class TickTickTodayPlugin extends Plugin {
 
     private async createJXAScripts() {
         try {
-            const fs = require('fs');
-            const path = require('path');
-
             const pluginDir = this.getPluginDir();
             // Create fetch script
             const fetchScript = `
@@ -160,13 +160,13 @@ function run() {
     try {
         const app = Application('${this.settings.tickTickAppName}');
         
-        // 获取今日任务
+        // Fetch today's tasks
         const todayTasks = app.todayTasks();
         
-        // 获取所有项目信息
+        // Fetch all project information
         const projects = app.projects();
         
-        // 返回包含任务和项目信息的对象
+        // Return combined tasks and project data
         return JSON.stringify({
             tasks: todayTasks,
             projects: projects,
@@ -230,7 +230,7 @@ function run(argv) {
             console.log('JXA scripts created:', this.jxaScriptPaths);
         } catch (error) {
             console.error('Failed to create JXA scripts:', error);
-            new Notice('创建JXA脚本失败: ' + error);
+            new Notice('Failed to create JXA scripts: ' + error);
         }
     }
 
@@ -238,8 +238,6 @@ function run(argv) {
         if (!this.jxaScriptPaths) return;
 
         try {
-            const fs = require('fs');
-
             if (fs.existsSync(this.jxaScriptPaths.fetch)) {
                 fs.unlinkSync(this.jxaScriptPaths.fetch);
             }
@@ -322,17 +320,15 @@ function run(argv) {
             }
 
             if (!this.jxaScriptPaths) {
-                new Notice('JXA脚本未初始化');
+                new Notice('JXA scripts are not initialized');
                 return [];
             }
-
-            const { exec } = require('child_process');
 
             return new Promise((resolve) => {
                 exec(`osascript -l JavaScript "${this.jxaScriptPaths!.fetch}"`, (error: any, stdout: any, stderr: any) => {
                     if (error) {
                         console.error('TickTick JXA Error:', error);
-                        new Notice('无法连接到TickTick应用: ' + error.message);
+                        new Notice('Unable to connect to the TickTick app: ' + error.message);
                         resolve([]);
                         return;
                     }
@@ -342,30 +338,30 @@ function run(argv) {
 
                         if (result.error) {
                             console.error('TickTick API Error:', result.error);
-                            new Notice('TickTick API错误: ' + result.error);
+                            new Notice('TickTick API error: ' + result.error);
                             resolve([]);
                             return;
                         }
 
-                        // 更新项目缓存
+                        // Update the project cache
                         if (result.projects) {
                             this.updateProjectsCache(result.projects);
                         }
 
                         // Parse the TickTick response format
                         const tickTickTasks: Task[] = this.parseTickTickResponse(result.tasks || result);
-                        // new Notice(`获取到 ${tickTickTasks.length} 个今日任务`);
+                        // new Notice(`Fetched ${tickTickTasks.length} tasks for today`);
                         resolve(this.sortTasks(tickTickTasks));
                     } catch (parseError) {
                         console.error('Parse Error:', parseError);
-                        new Notice('解析TickTick数据失败: ' + parseError);
+                        new Notice('Failed to parse TickTick data: ' + parseError);
                         resolve([]);
                     }
                 });
             });
         } catch (error) {
             console.error('TickTick Integration Error:', error);
-            new Notice('TickTick集成失败: ' + error);
+            new Notice('TickTick integration failed: ' + error);
             return [];
         }
     }
@@ -390,7 +386,7 @@ function run(argv) {
                                 dueDate: task.dueDate || task.startDate || '',
                                 id: task.id || '',
                                 project: this.getProjectName(task.projectId),
-                                projectId: task.projectId || '', // 保存原始项目ID
+                                projectId: task.projectId || '', // Store the original project ID
                                 tags: task.tags || [],
                                 pinned: task.pinnedTime && task.pinnedTime !== "-1" // TickTick uses pinnedTime field
                             };
@@ -402,7 +398,7 @@ function run(argv) {
             }
         } catch (error) {
             console.error('Error parsing TickTick response:', error);
-            new Notice('解析任务数据时出错: ' + error);
+            new Notice('Error parsing task data: ' + error);
         }
 
         return tasks;
@@ -410,7 +406,7 @@ function run(argv) {
 
     private updateProjectsCache(projects: any): void {
         try {
-            // 解析项目数据（可能是字符串格式）
+            // Parse project data (may be provided as a string)
             const projectsData = typeof projects === 'string'
                 ? JSON.parse(projects)
                 : projects;
@@ -431,23 +427,19 @@ function run(argv) {
     private getProjectName(projectId: string): string {
         if (!projectId) return '';
 
-        // 首先尝试从缓存中获取真实项目名称
+        // First try to get the real project name from the cache
         if (this.projectsCache.has(projectId)) {
             const projectName = this.projectsCache.get(projectId) || '';
-            // 如果是Inbox，显示为"收集箱"
-            if (projectName === 'Inbox') {
-                return '收集箱';
-            }
             return projectName;
         }
 
-        // 如果是inbox，显示为"收集箱"
+        // If the project ID contains inbox, treat it as the Inbox
         if (projectId.includes('inbox')) {
-            return '收集箱';
+            return 'Inbox';
         }
 
-        // 如果缓存中没有找到，显示项目ID的最后8位作为备用
-        return `项目 ${projectId.slice(-8)}`;
+        // Fall back to the last 8 characters of the project ID
+        return `Project ${projectId.slice(-8)}`;
     }
 
     private convertTickTickPriority(priority: number): string {
@@ -513,7 +505,7 @@ class TodayTasksView extends ItemView {
     }
 
     getDisplayText() {
-        return "Today's Tasks";
+    return "Today's tasks";
     }
 
     getIcon() {
@@ -528,7 +520,7 @@ class TodayTasksView extends ItemView {
         // Header with link to TickTick "Today" smart list
         const header = container.createEl("h4");
         const link = header.createEl("a", {
-            text: "Today's Tasks",
+            text: "Today's tasks",
             href: "ticktick://v1/show?smartlist=today",
             cls: "ticktick-link"
         });
@@ -541,12 +533,14 @@ class TodayTasksView extends ItemView {
         // Nothing to clean up
     }
 
-	async refreshTasks() {
-		this.tasks = await this.plugin.getTodaysTasks();
-		this.renderTasks();
-		// Show refresh notification
-		new Notice('Today Refreshed');
-	}    private renderTasks() {
+    async refreshTasks() {
+        this.tasks = await this.plugin.getTodaysTasks();
+        this.renderTasks();
+        // Show refresh notification
+        new Notice('Today refreshed');
+    }
+
+    private renderTasks() {
         const container = this.containerEl.children[1];
 
         // Clear previous content except the header
@@ -555,7 +549,7 @@ class TodayTasksView extends ItemView {
         if (header) {
             container.appendChild(header);
         } else {
-            container.createEl("h4", { text: "Today's Tasks" });
+            container.createEl("h4", { text: "Today's tasks" });
         }
 
         // Add refresh button
@@ -584,7 +578,7 @@ class TodayTasksView extends ItemView {
         // Render incomplete tasks
         if (incompleteTasks.length > 0) {
             const incompleteSection = container.createEl("div", { cls: "ticktick-task-section" });
-            incompleteSection.createEl("h5", { text: `📋 Todo (${incompleteTasks.length})` });
+            incompleteSection.createEl("h5", { text: `📋 To-do (${incompleteTasks.length})` });
             this.renderTaskList(incompleteSection, incompleteTasks);
         }
 
@@ -645,21 +639,21 @@ class TodayTasksView extends ItemView {
             });
 
             if (task.id) {
-                // 创建可点击的链接
+                // Create a clickable link
                 const taskLink = taskText.createEl("a", {
                     text: task.text,
                     cls: "ticktick-task-link"
                 });
-                const projectId = task.projectId || 'inbox'; // 如果没有项目ID，使用inbox作为默认值
+                const projectId = task.projectId || 'inbox'; // Use inbox as the default when no project ID is available
                 taskLink.href = `https://dida365.com/webapp/#p/${projectId}/tasks/${task.id}`;
                 taskLink.target = "_blank";
                 taskLink.addEventListener('click', (event) => {
                     event.stopPropagation();
-                    // 使用 Obsidian 的方式打开外部链接
+                    // Use Obsidian's external link handling
                     window.open(`https://dida365.com/webapp/#p/${projectId}/tasks/${task.id}`, '_blank');
                 });
             } else {
-                // 如果没有ID，只显示文本
+                // If no ID is available, render plain text
                 taskText.textContent = task.text;
             }
 
@@ -729,21 +723,20 @@ class TodayTasksView extends ItemView {
     private async toggleTickTickTask(task: Task) {
         try {
             if (!task.id) {
-                throw new Error('任务ID缺失');
+                throw new Error('Missing task ID');
             }
 
             if (!this.plugin.getJXAScriptPaths()) {
-                throw new Error('JXA脚本未初始化');
+                throw new Error('JXA scripts are not initialized');
             }
 
-            const { exec } = require('child_process');
             const scriptPaths = this.plugin.getJXAScriptPaths()!;
 
             return new Promise<void>((resolve) => {
                 exec(`osascript -l JavaScript "${scriptPaths.toggle}" "${task.id}"`, (error: any, stdout: any, stderr: any) => {
                     if (error) {
                         console.error('TickTick Toggle Error:', error);
-                        new Notice('切换TickTick任务失败: ' + error.message);
+                        new Notice('Failed to toggle TickTick task: ' + error.message);
                         resolve();
                         return;
                     }
@@ -752,15 +745,15 @@ class TodayTasksView extends ItemView {
                         const result = JSON.parse(stdout.trim());
 
                         if (result.success) {
-                            new Notice(`任务 "${task.text}" 状态已切换`);
+                            new Notice(`Task "${task.text}" status toggled`);
                             console.log('TickTick toggle successful:', result);
                         } else {
                             console.error('TickTick Toggle Failed:', result.error);
-                            new Notice('切换任务状态失败: ' + result.error);
+                            new Notice('Failed to toggle task status: ' + result.error);
                         }
                     } catch (parseError) {
                         console.error('Parse Toggle Result Error:', parseError);
-                        new Notice('解析切换结果失败');
+                        new Notice('Failed to parse toggle result');
                     }
 
                     resolve();
@@ -768,7 +761,7 @@ class TodayTasksView extends ItemView {
             });
         } catch (error) {
             console.error('TickTick Toggle Integration Error:', error);
-            new Notice('TickTick任务切换失败: ' + error);
+            new Notice('TickTick task toggle failed: ' + error);
             throw error;
         }
     }
@@ -784,25 +777,27 @@ class TodayTasksView extends ItemView {
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const taskDate = new Date(date.getFullYear(), date.getMonth(), date.getDate());
 
-            // 计算天数差异
+            // Calculate the number of days between today and the task date
             const diffTime = taskDate.getTime() - today.getTime();
             const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
 
-            // 格式化时间（如果有具体时间的话）
-            const timeStr = date.getHours() !== 0 || date.getMinutes() !== 0
-                ? ` ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
+            // Build the time suffix if a specific time is provided
+            const hasTime = date.getHours() !== 0 || date.getMinutes() !== 0;
+            const timeStr = hasTime
+                ? ` at ${date.getHours().toString().padStart(2, '0')}:${date.getMinutes().toString().padStart(2, '0')}`
                 : '';
 
             if (diffDays === 0) {
-                return `今天${timeStr}`;
+                return `Today${timeStr}`;
             } else if (diffDays === 1) {
-                return `明天${timeStr}`;
+                return `Tomorrow${timeStr}`;
             } else if (diffDays === -1) {
-                return `昨天${timeStr}`;
+                return `Yesterday${timeStr}`;
             } else if (diffDays > 0) {
-                return `${diffDays}天后${timeStr}`;
+                return `In ${diffDays} ${diffDays === 1 ? 'day' : 'days'}${timeStr}`;
             } else {
-                return `${Math.abs(diffDays)}天前${timeStr}`;
+                const daysAgo = Math.abs(diffDays);
+                return `${daysAgo} ${daysAgo === 1 ? 'day' : 'days'} ago${timeStr}`;
             }
         } catch (error) {
             return '';
@@ -824,7 +819,7 @@ class TickTickTodaySettingTab extends PluginSettingTab {
         containerEl.empty();
 
         new Setting(containerEl)
-            .setName('Auto Refresh')
+            .setName('Auto refresh')
             .setDesc('Automatically refresh tasks at regular intervals')
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.autoRefresh)
@@ -834,7 +829,7 @@ class TickTickTodaySettingTab extends PluginSettingTab {
                 }));
 
         new Setting(containerEl)
-            .setName('Refresh Interval')
+            .setName('Refresh interval')
             .setDesc('How often to refresh tasks (in minutes)')
             .addSlider(slider => slider
                 .setLimits(1, 60, 1)
@@ -846,7 +841,7 @@ class TickTickTodaySettingTab extends PluginSettingTab {
                 }));
 
         new Setting(containerEl)
-            .setName('TickTick App Name')
+            .setName('TickTick app name')
             .setDesc('Name of the TickTick application (default: TickTick)')
             .addText(text => text
                 .setPlaceholder('TickTick')
