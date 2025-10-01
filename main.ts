@@ -618,6 +618,12 @@ class TodayTasksView extends ItemView {
 
                 try {
                     await this.toggleTask(task);
+
+                    if (task.completed) {
+                        this.tasks = this.tasks.filter(t => t !== task);
+                        this.renderTasks();
+                        return;
+                    }
                 } catch (error) {
                     task.completed = !task.completed;
                     checkbox.checked = task.completed;
@@ -698,21 +704,33 @@ class TodayTasksView extends ItemView {
         if (task.file) {
             // Handle Obsidian tasks
             const file = this.app.vault.getAbstractFileByPath(task.file);
-            if (file instanceof TFile && task.line) {
-                const content = await this.app.vault.read(file);
-                const lines = content.split('\n');
+            if (file instanceof TFile && typeof task.line === 'number' && task.line > 0) {
+                const lineIndex = task.line - 1;
+                let lineProcessed = false;
 
-                if (lines[task.line - 1]) {
-                    const currentLine = lines[task.line - 1];
-                    const newLine = task.completed
-                        ? currentLine.replace(/\[ \]/, '[x]')
-                        : currentLine.replace(/\[x\]/, '[ ]');
+                await this.app.vault.process(file, (data) => {
+                    const lines = data.split('\n');
 
-                    lines[task.line - 1] = newLine;
-                    await this.app.vault.modify(file, lines.join('\n'));
+                    if (lineIndex < 0 || lineIndex >= lines.length) {
+                        return data;
+                    }
 
-                    new Notice(`Task ${task.completed ? 'completed' : 'uncompleted'}!`);
+                    const currentLine = lines[lineIndex];
+                    const checkboxPattern = task.completed ? /\[ \]/ : /\[[xX]\]/;
+                    const replacement = task.completed ? '[x]' : '[ ]';
+                    const updatedLine = currentLine.replace(checkboxPattern, replacement);
+
+                    lines[lineIndex] = updatedLine;
+                    lineProcessed = true;
+
+                    return lines.join('\n');
+                });
+
+                if (!lineProcessed) {
+                    throw new Error(`Failed to toggle task in file ${task.file} at line ${task.line}`);
                 }
+
+                new Notice(`Task ${task.completed ? 'completed' : 'uncompleted'}!`);
             }
         } else if (task.id) {
             // Handle TickTick tasks
