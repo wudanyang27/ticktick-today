@@ -28,12 +28,14 @@ interface TickTickTodaySettings {
     refreshInterval: number; // in minutes
     autoRefresh: boolean;
     tickTickAppName: string;
+    showRefreshNotice: boolean;
 }
 
 const DEFAULT_SETTINGS: TickTickTodaySettings = {
     refreshInterval: 5,
     autoRefresh: true,
-    tickTickAppName: 'TickTick'
+    tickTickAppName: 'TickTick',
+    showRefreshNotice: true
 }
 
 interface Task {
@@ -526,18 +528,22 @@ class TodayTasksView extends ItemView {
         });
         link.target = "_blank";
 
-        await this.refreshTasks();
+        await this.refreshTasks(false);
     }
 
     async onClose() {
         // Nothing to clean up
     }
 
-    async refreshTasks() {
+    async refreshTasks(showNotice: boolean = true, isManual: boolean = false) {
         this.tasks = await this.plugin.getTodaysTasks();
         this.renderTasks();
-        // Show refresh notification
-        new Notice('Today refreshed');
+        // Show refresh notification:
+        // - Always show for manual refresh
+        // - For auto refresh, respect the settings
+        if (showNotice && (isManual || this.plugin.settings.showRefreshNotice)) {
+            new Notice('Today refreshed');
+        }
     }
 
     private renderTasks() {
@@ -557,7 +563,7 @@ class TodayTasksView extends ItemView {
             text: "🔄 Refresh",
             cls: "mod-cta ticktick-refresh-btn"
         });
-        refreshBtn.addEventListener('click', () => this.refreshTasks());
+        refreshBtn.addEventListener('click', () => this.refreshTasks(true, true));
 
         // Add task count
         const completedCount = this.tasks.filter(t => t.completed).length;
@@ -866,6 +872,16 @@ class TickTickTodaySettingTab extends PluginSettingTab {
                 .setValue(this.plugin.settings.tickTickAppName)
                 .onChange(async (value) => {
                     this.plugin.settings.tickTickAppName = value || 'TickTick';
+                    await this.plugin.saveSettings();
+                }));
+
+        new Setting(containerEl)
+            .setName('Show auto-refresh notice')
+            .setDesc('Display a notification when tasks are automatically refreshed (manual refresh always shows notice)')
+            .addToggle(toggle => toggle
+                .setValue(this.plugin.settings.showRefreshNotice)
+                .onChange(async (value) => {
+                    this.plugin.settings.showRefreshNotice = value;
                     await this.plugin.saveSettings();
                 }));
     }
