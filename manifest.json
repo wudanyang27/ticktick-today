@@ -3,7 +3,7 @@
 	"name": "TickTick Today",
 	"version": "1.0.5",
 	"minAppVersion": "1.1.0",
-	"description": "Display TickTick today's tasks in a sidebar panel",
+	"description": "Display TickTick today's tasks in a sidebar panel.",
 	"author": "wudanyang27",
 	"authorUrl": "https://github.com/wudanyang27",
 	"isDesktopOnly": true
