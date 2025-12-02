@@ -7,20 +7,12 @@ import {
     WorkspaceLeaf,
     Notice,
     TFile,
-    moment,
     Platform,
     FileSystemAdapter
 } from 'obsidian';
 import * as fs from 'fs';
 import * as path from 'path';
-import { exec } from 'child_process';
-
-// macOS JXA interface for TickTick
-declare global {
-    interface Window {
-        require?: any;
-    }
-}
+import { exec, ExecException } from 'child_process';
 
 const VIEW_TYPE_TODAY_TASKS = "today-tasks-view";
 
@@ -52,16 +44,6 @@ interface Task {
     pinned?: boolean;
 }
 
-interface TickTickTask {
-    title: string;
-    isCompleted: boolean;
-    priority: number;
-    dueDate?: string;
-    project?: string;
-    tags?: string[];
-    id: string;
-}
-
 export default class TickTickTodayPlugin extends Plugin {
     settings: TickTickTodaySettings;
     private refreshInterval: NodeJS.Timeout | null = null;
@@ -79,7 +61,7 @@ export default class TickTickTodayPlugin extends Plugin {
         await this.loadSettings();
 
         // Create JXA script files on startup
-        await this.createJXAScripts();
+        this.createJXAScripts();
 
         // Register the view
         this.registerView(
@@ -88,8 +70,8 @@ export default class TickTickTodayPlugin extends Plugin {
         );
 
         // Add ribbon icon
-    const ribbonIconEl = this.addRibbonIcon('calendar-check', 'Today\'s tasks', (evt: MouseEvent) => {
-            this.activateView();
+    const ribbonIconEl = this.addRibbonIcon('calendar-check', 'Today\'s tasks', () => {
+            void this.activateView();
         });
         ribbonIconEl.addClass('ticktick-today-ribbon-class');
 
@@ -98,7 +80,7 @@ export default class TickTickTodayPlugin extends Plugin {
             id: 'open-today-tasks',
             name: 'Open today\'s tasks',
             callback: () => {
-                this.activateView();
+                void this.activateView();
             }
         });
 
@@ -107,7 +89,7 @@ export default class TickTickTodayPlugin extends Plugin {
             id: 'refresh-today-tasks',
             name: 'Refresh today\'s tasks',
             callback: () => {
-                this.refreshTasks();
+                void this.refreshTasks();
             }
         });
 
@@ -116,7 +98,7 @@ export default class TickTickTodayPlugin extends Plugin {
 
         // Auto-open the view on startup
         this.app.workspace.onLayoutReady(() => {
-            this.activateView();
+            void this.activateView();
         });
 
         // Setup auto-refresh
@@ -153,7 +135,7 @@ export default class TickTickTodayPlugin extends Plugin {
         return `${this.getPluginDir()}/${fileName}`;
     }
 
-    private async createJXAScripts() {
+    private createJXAScripts(): void {
         try {
             const pluginDir = this.getPluginDir();
             // Create fetch script
@@ -228,10 +210,7 @@ function run(argv) {
                 fetch: fetchPath,
                 toggle: togglePath
             };
-
-            console.log('JXA scripts created:', this.jxaScriptPaths);
         } catch (error) {
-            console.error('Failed to create JXA scripts:', error);
             new Notice('Failed to create JXA scripts: ' + error);
         }
     }
@@ -247,10 +226,7 @@ function run(argv) {
             if (fs.existsSync(this.jxaScriptPaths.toggle)) {
                 fs.unlinkSync(this.jxaScriptPaths.toggle);
             }
-
-            console.log('JXA scripts cleaned up');
         } catch (error) {
-            console.error('Failed to cleanup JXA scripts:', error);
         }
     }
 
@@ -276,13 +252,13 @@ function run(argv) {
         }
     }
 
-    async refreshTasks() {
+    refreshTasks(): void {
         const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_TODAY_TASKS);
-        leaves.forEach(leaf => {
+        for (const leaf of leaves) {
             if (leaf.view instanceof TodayTasksView) {
-                leaf.view.refreshTasks();
+                void leaf.view.refreshTasks();
             }
-        });
+        }
     }
 
     setupAutoRefresh() {
@@ -292,7 +268,7 @@ function run(argv) {
 
         if (this.settings.autoRefresh && this.settings.refreshInterval > 0) {
             this.refreshInterval = setInterval(() => {
-                this.refreshTasks();
+                void this.refreshTasks();
             }, this.settings.refreshInterval * 60 * 1000);
         }
     }
@@ -306,7 +282,7 @@ function run(argv) {
         this.setupAutoRefresh();
 
         // Recreate JXA scripts with updated settings
-        await this.createJXAScripts();
+        this.createJXAScripts();
     }
 
     async getTodaysTasks(): Promise<Task[]> {
@@ -327,9 +303,8 @@ function run(argv) {
             }
 
             return new Promise((resolve) => {
-                exec(`osascript -l JavaScript "${this.jxaScriptPaths!.fetch}"`, (error: any, stdout: any, stderr: any) => {
+                exec(`osascript -l JavaScript "${this.jxaScriptPaths!.fetch}"`, (error: ExecException | null, stdout: string, stderr: string) => {
                     if (error) {
-                        console.error('TickTick JXA Error:', error);
                         new Notice('Unable to connect to the TickTick app: ' + error.message);
                         resolve([]);
                         return;
@@ -339,7 +314,6 @@ function run(argv) {
                         const result = JSON.parse(stdout.trim());
 
                         if (result.error) {
-                            console.error('TickTick API Error:', result.error);
                             new Notice('TickTick API error: ' + result.error);
                             resolve([]);
                             return;
@@ -355,42 +329,41 @@ function run(argv) {
                         // new Notice(`Fetched ${tickTickTasks.length} tasks for today`);
                         resolve(this.sortTasks(tickTickTasks));
                     } catch (parseError) {
-                        console.error('Parse Error:', parseError);
                         new Notice('Failed to parse TickTick data: ' + parseError);
                         resolve([]);
                     }
                 });
             });
         } catch (error) {
-            console.error('TickTick Integration Error:', error);
             new Notice('TickTick integration failed: ' + error);
             return [];
         }
     }
 
-    private parseTickTickResponse(response: any): Task[] {
+    private parseTickTickResponse(response: string | unknown[]): Task[] {
         const tasks: Task[] = [];
 
         try {
             // Parse the JSON string response from TickTick
-            const data = typeof response === 'string' ? JSON.parse(response) : response;
+            const data = typeof response === 'string' ? JSON.parse(response) as unknown[] : response;
 
             // The response is an array of date groups
             if (Array.isArray(data)) {
-                data.forEach((dateGroup: any) => {
+                data.forEach((dateGroup: Record<string, unknown>) => {
                     // Each dateGroup has a 'tasks' array
-                    if (dateGroup.tasks && Array.isArray(dateGroup.tasks)) {
-                        dateGroup.tasks.forEach((task: any) => {
+                    const groupTasks = dateGroup.tasks as Record<string, unknown>[] | undefined;
+                    if (groupTasks && Array.isArray(groupTasks)) {
+                        groupTasks.forEach((task: Record<string, unknown>) => {
                             const taskObj: Task = {
-                                text: task.title || 'Untitled Task',
+                                text: (task.title as string) || 'Untitled Task',
                                 completed: task.status === 2, // TickTick uses status 2 for completed tasks
-                                priority: this.convertTickTickPriority(task.priority || 0),
-                                dueDate: task.dueDate || task.startDate || '',
-                                id: task.id || '',
-                                project: this.getProjectName(task.projectId),
-                                projectId: task.projectId || '', // Store the original project ID
-                                tags: task.tags || [],
-                                pinned: task.pinnedTime && task.pinnedTime !== "-1" // TickTick uses pinnedTime field
+                                priority: this.convertTickTickPriority((task.priority as number) || 0),
+                                dueDate: (task.dueDate as string) || (task.startDate as string) || '',
+                                id: (task.id as string) || '',
+                                project: this.getProjectName((task.projectId as string) || ''),
+                                projectId: (task.projectId as string) || '', // Store the original project ID
+                                tags: (task.tags as string[]) || [],
+                                pinned: Boolean(task.pinnedTime && task.pinnedTime !== "-1") // TickTick uses pinnedTime field
                             };
 
                             tasks.push(taskObj);
@@ -399,30 +372,28 @@ function run(argv) {
                 });
             }
         } catch (error) {
-            console.error('Error parsing TickTick response:', error);
             new Notice('Error parsing task data: ' + error);
         }
 
         return tasks;
     }
 
-    private updateProjectsCache(projects: any): void {
+    private updateProjectsCache(projects: string | unknown[]): void {
         try {
             // Parse project data (may be provided as a string)
             const projectsData = typeof projects === 'string'
-                ? JSON.parse(projects)
+                ? JSON.parse(projects) as unknown[]
                 : projects;
 
             if (Array.isArray(projectsData)) {
-                projectsData.forEach((project: any) => {
-                    if (project.id && project.name) {
-                        this.projectsCache.set(project.id, project.name);
+                projectsData.forEach((project: unknown) => {
+                    const proj = project as Record<string, unknown>;
+                    if (proj.id && proj.name) {
+                        this.projectsCache.set(proj.id as string, proj.name as string);
                     }
                 });
-                console.log('Projects cache updated:', this.projectsCache);
             }
         } catch (error) {
-            console.error('Error updating projects cache:', error);
         }
     }
 
@@ -563,11 +534,7 @@ class TodayTasksView extends ItemView {
             text: "🔄 Refresh",
             cls: "mod-cta ticktick-refresh-btn"
         });
-        refreshBtn.addEventListener('click', () => this.refreshTasks(true, true));
-
-        // Add task count
-        const completedCount = this.tasks.filter(t => t.completed).length;
-        const totalCount = this.tasks.length;
+        refreshBtn.addEventListener('click', () => void this.refreshTasks(true, true));
 
         if (this.tasks.length === 0) {
             container.createEl("p", {
@@ -584,7 +551,7 @@ class TodayTasksView extends ItemView {
         // Render incomplete tasks
         if (incompleteTasks.length > 0) {
             const incompleteSection = container.createEl("div", { cls: "ticktick-task-section" });
-            incompleteSection.createEl("h5", { text: `📋 To-do (${incompleteTasks.length})` });
+            incompleteSection.createEl("h5", { text: `📋 To do (${incompleteTasks.length})` });
             this.renderTaskList(incompleteSection, incompleteTasks);
         }
 
@@ -612,7 +579,7 @@ class TodayTasksView extends ItemView {
                 cls: "ticktick-task-checkbox"
             });
             checkbox.checked = task.completed;
-            checkbox.addEventListener('change', async (event) => {
+            checkbox.addEventListener('change', (event) => {
                 event.stopPropagation();
                 task.completed = checkbox.checked;
 
@@ -622,15 +589,12 @@ class TodayTasksView extends ItemView {
                     taskItem.removeClass("ticktick-task-completed");
                 }
 
-                try {
-                    await this.toggleTask(task);
-
+                this.toggleTask(task).then(() => {
                     if (task.completed) {
                         this.tasks = this.tasks.filter(t => t !== task);
                         this.renderTasks();
-                        return;
                     }
-                } catch (error) {
+                }).catch(() => {
                     task.completed = !task.completed;
                     checkbox.checked = task.completed;
                     if (task.completed) {
@@ -638,8 +602,7 @@ class TodayTasksView extends ItemView {
                     } else {
                         taskItem.removeClass("ticktick-task-completed");
                     }
-                    console.error('Toggle failed:', error);
-                }
+                });
             });
 
             // Task content container
@@ -757,9 +720,8 @@ class TodayTasksView extends ItemView {
             const scriptPaths = this.plugin.getJXAScriptPaths()!;
 
             return new Promise<void>((resolve) => {
-                exec(`osascript -l JavaScript "${scriptPaths.toggle}" "${task.id}"`, (error: any, stdout: any, stderr: any) => {
+                exec(`osascript -l JavaScript "${scriptPaths.toggle}" "${task.id}"`, (error: ExecException | null, stdout: string, stderr: string) => {
                     if (error) {
-                        console.error('TickTick Toggle Error:', error);
                         new Notice('Failed to toggle TickTick task: ' + error.message);
                         resolve();
                         return;
@@ -770,13 +732,10 @@ class TodayTasksView extends ItemView {
 
                         if (result.success) {
                             new Notice(`Task "${task.text}" status toggled`);
-                            console.log('TickTick toggle successful:', result);
                         } else {
-                            console.error('TickTick Toggle Failed:', result.error);
                             new Notice('Failed to toggle task status: ' + result.error);
                         }
-                    } catch (parseError) {
-                        console.error('Parse Toggle Result Error:', parseError);
+                    } catch {
                         new Notice('Failed to parse toggle result');
                     }
 
@@ -784,7 +743,6 @@ class TodayTasksView extends ItemView {
                 });
             });
         } catch (error) {
-            console.error('TickTick Toggle Integration Error:', error);
             new Notice('TickTick task toggle failed: ' + error);
             throw error;
         }
@@ -843,7 +801,7 @@ class TickTickTodaySettingTab extends PluginSettingTab {
         containerEl.empty();
 
         new Setting(containerEl)
-            .setName('Auto refresh')
+            .setName('Auto-refresh')
             .setDesc('Automatically refresh tasks at regular intervals')
             .addToggle(toggle => toggle
                 .setValue(this.plugin.settings.autoRefresh)
