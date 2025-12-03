@@ -227,6 +227,7 @@ function run(argv) {
                 fs.unlinkSync(this.jxaScriptPaths.toggle);
             }
         } catch (error) {
+            console.error('Failed to clean up JXA scripts:', error);
         }
     }
 
@@ -248,7 +249,7 @@ function run(argv) {
 
         // "Reveal" the leaf in case it is in a collapsed sidebar
         if (leaf) {
-            workspace.revealLeaf(leaf);
+            void workspace.revealLeaf(leaf);
         }
     }
 
@@ -293,12 +294,12 @@ function run(argv) {
         try {
             // Check if we're on macOS and can use JXA
             if (!Platform.isMacOS) {
-                new Notice('TickTick integration requires macOS');
+                new Notice('TickTick Integration Requires MacOS');
                 return [];
             }
 
             if (!this.jxaScriptPaths) {
-                new Notice('JXA scripts are not initialized');
+                new Notice('JXA Scripts Are Not Initialized');
                 return [];
             }
 
@@ -394,6 +395,7 @@ function run(argv) {
                 });
             }
         } catch (error) {
+            console.error('Failed to update projects cache:', error);
         }
     }
 
@@ -531,7 +533,7 @@ class TodayTasksView extends ItemView {
 
         // Add refresh button
         const refreshBtn = container.createEl("button", {
-            text: "🔄 Refresh",
+            text: "Refresh",
             cls: "mod-cta ticktick-refresh-btn"
         });
         refreshBtn.addEventListener('click', () => void this.refreshTasks(true, true));
@@ -782,6 +784,7 @@ class TodayTasksView extends ItemView {
                 return `${daysAgo} ${daysAgo === 1 ? 'day' : 'days'} ago${timeStr}`;
             }
         } catch (error) {
+            console.error('Failed to format date time:', error);
             return '';
         }
     }
@@ -823,8 +826,8 @@ class TickTickTodaySettingTab extends PluginSettingTab {
                 }));
 
         new Setting(containerEl)
-            .setName('TickTick app name')
-            .setDesc('Name of the TickTick application (default: TickTick)')
+            .setName('TickTick App Name')
+            .setDesc('Name Of The TickTick Application (Default: TickTick)')
             .addText(text => text
                 .setPlaceholder('TickTick')
                 .setValue(this.plugin.settings.tickTickAppName)
