@@ -1,7 +1,7 @@
 {
 	"id": "ticktick-today",
 	"name": "TickTick Today",
-	"version": "1.0.9",
+	"version": "1.0.10",
 	"minAppVersion": "1.1.0",
 	"description": "Display TickTick today's tasks in a sidebar panel.",
 	"author": "wudanyang27",
