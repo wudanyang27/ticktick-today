@@ -294,12 +294,12 @@ function run(argv) {
         try {
             // Check if we're on macOS and can use JXA
             if (!Platform.isMacOS) {
-                new Notice('TickTick Integration Requires MacOS');
+                new Notice('TickTick integration requires macOS');
                 return [];
             }
 
             if (!this.jxaScriptPaths) {
-                new Notice('JXA Scripts Are Not Initialized');
+                new Notice('JXA scripts are not initialized');
                 return [];
             }
 
@@ -827,7 +827,7 @@ class TickTickTodaySettingTab extends PluginSettingTab {
 
         new Setting(containerEl)
             .setName('TickTick App Name')
-            .setDesc('Name Of The TickTick Application (Default: TickTick)')
+            .setDesc('Name of the TickTick application (Default: TickTick)')
             .addText(text => text
                 .setPlaceholder('TickTick')
                 .setValue(this.plugin.settings.tickTickAppName)
